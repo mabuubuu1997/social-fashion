@@ -192,6 +192,15 @@ const authCtrl = {
       return res.status(500).json({msg: err.message})
     }
   },
+  logout: async (req, res) => {
+    try {
+        res.clearCookie('refreshtoken', {path: '/api/refresh_token'})
+        return res.json({msg: "Logged Out!"})
+
+    } catch (err) {
+        return res.status(500).json({msg: err.message})
+    }
+},
 };
 //Access Token
 const createAccessToken = (payload) => {
