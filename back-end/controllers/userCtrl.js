@@ -19,6 +19,21 @@ const userCtrl = {
             return res.status(500).json({msg: err.message})
         }
     },
+    updateUserInfor: async (req, res) => {
+        try {
+            const { avatar, name, address, gender, story } = req.body
+            if(!name) return res.status(400).json({msg: "Please add your name."})
+
+            await Users.findOneAndUpdate({_id: req.user._id}, {
+                avatar, name, address, gender, story
+            })
+
+            res.json({msg: "Update Success!"})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 }
 
 module.exports = userCtrl
