@@ -95,10 +95,48 @@ const post_controller = {
                     select: '-password'
                 }
             })
-            
+
             res.status(200).json({post_data})
         } catch (error) {
             res.status(400).json({msg: err.message})
+        }
+    },
+
+    likePost: async(req, res) => {
+        try {
+            const id = req.params.id
+            const post = await PostModel.find({_id: id, likes: req.user._id})
+
+            if(post && post.length > 0) {
+                return res.status(400).json({msg: 'You liked this post'})
+            }
+
+            const like = await PostModel.findOneAndUpdate({_id: id}, {
+                $push: {likes: req.user._id},
+            }, {new: true})
+
+            if(!like) return res.status(400).json({msg: 'This post does not exist'})
+
+            res.json({msg: 'Liked post'})
+
+        } catch (error) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    unLikePost: async (req, res) => {
+        try{
+            const id = req.params.id
+
+            const like = await PostModel.findOneAndUpdate({_id: id, likes: req.user._id},{
+                $pull: {likes: req.user._id}
+            }, {new: true})
+
+            if(!like) return res.status(400).json({msg: 'this post does not exist'})
+
+            res.json({msg: 'UnLiked Post'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
         }
     }
 
