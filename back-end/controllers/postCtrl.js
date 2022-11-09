@@ -65,7 +65,7 @@ const post_controller = {
         }
     },
 
-    deletePost: async(req, res) =>{
+    deletePost: async(req, res) => {
         try {
             await PostModel.findOneAndDelete({_id: req.params.id, post:req.user._id});
             res.json({ message: "Post deleted successfully." });
@@ -73,6 +73,34 @@ const post_controller = {
             res.status(400).json({msg: err.message});
         }
     },
+
+    getAuthPost: async(req, res) => {
+        try {
+            const post_auth = await PostModel.find({userId: req.params.id}).sort('createdAt')
+
+            res.json({post_auth})
+        } catch (error) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+
+    getPost: async(req, res) => {
+        try{
+            const id = req.params.id
+
+            const post_data = await PostModel.findById(id).populate('user likes', 'avatar name').populate({
+                path: 'comments',
+                populate: {
+                    path: 'user likes',
+                    select: '-password'
+                }
+            })
+            
+            res.status(200).json({post_data})
+        } catch (error) {
+            res.status(400).json({msg: err.message})
+        }
+    }
 
 
 }
