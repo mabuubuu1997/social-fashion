@@ -25,6 +25,43 @@ const comment_controller = {
             return res.status(500).json({msg: err.message})
         }
     },
+    updateComment: async (req, res) => {
+        try {
+            let content = req.body.content
+            let id = req.params.id
+            
+            await Model_Comments.findOneAndUpdate({
+                _id: id, user: req.user._id
+            }, {content})
+
+            res.json({msg: 'Update Success!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    deleteComment: async (req, res) => {
+        try {
+            let id = req.params.id
+
+            const comment = await Model_Comments.findOneAndDelete({
+                _id: id,
+                $or: [
+                    {user: req.user._id},
+                    {postUserId: req.user._id}
+                ]
+            })
+
+            await Model_Posts.findOneAndUpdate({_id: comment.postId}, {
+                $pull: {comments: id}
+            })
+
+            res.json({msg: 'Deleted Comment!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 
 }
 
