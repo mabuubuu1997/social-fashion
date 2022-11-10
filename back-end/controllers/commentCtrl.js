@@ -62,6 +62,37 @@ const comment_controller = {
             return res.status(500).json({msg: err.message})
         }
     },
+    likeCommentPost: async (req, res) => {
+        try {
+            let id = req.params.id
+
+            const check_comment = await Model_Comments.find({_id: id, likes: req.user._id})
+            if(check_comment.length > 0) return res.status(400).json({msg: "You liked this post."})
+
+            await Model_Comments.findOneAndUpdate({_id: id}, {
+                $push: {likes: req.user._id}
+            }, {new: true})
+
+            res.json({msg: 'Liked Comment!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+    unLikeCommentPost: async (req, res) => {
+        try {
+            let id = req.params.id
+
+            await Model_Comments.findOneAndUpdate({_id: id}, {
+                $pull: {likes: req.user._id}
+            }, {new: true})
+
+            res.json({msg: 'UnLiked Comment!'})
+
+        } catch (err) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
 
 }
 
