@@ -44,6 +44,38 @@ const product_controller = {
         }
     },
 
+    updateProduct: async(req, res) =>{
+        try
+        {
+            const ObjectId = require('mongoose').Types.ObjectId
+            const { id } = req.params;
+            const {name, description, images, quantity} = req.body;
+        
+            if (!ObjectId.isValid(id)) return res.status(404).send(`No product with id: ${id}`);
+    
+            const updated_product = { creator, name, description, images, quantity, _id: id };
+    
+            await ProductModel.findByIdAndUpdate(id, updated_product)
+            .populate("user", "avatar name")
+    
+            res.json({
+                updated_product: {...updated_product._doc,
+                    name, description, images, quantity}});
+        } catch(err){
+            res.status(400).json({msg: err.message});
+        }
+    },
+
+    deleteProduct: async(req, res) => {
+        try {
+            await ProductModel.findOneAndDelete({_id: req.params.id});
+            res.json({ message: "Product deleted successfully." });
+        } catch (err) {
+            res.status(400).json({msg: err.message});
+        }
+    },
+
+
 
 }
 
