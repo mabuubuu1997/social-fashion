@@ -21,6 +21,30 @@ const product_controller = {
         }
     },
 
+    getProducts: async (req, res) => {
+        try {
+
+            const product = await ProductModel.find(
+                req.user._id
+            ).sort('-createdAt')
+            .populate("user","avatar name")
+            res.status(200).json(product);
+        } catch (err) {
+            res.status(404).json({msg: err.message});
+        }
+    },
+
+    getAuthProduct: async(req, res) => {
+        try {
+            const product_auth = await ProductModel.find({userId: req.params.id}).sort('createdAt')
+
+            res.json({product_auth})
+        } catch (error) {
+            return res.status(500).json({msg: err.message})
+        }
+    },
+
+
 }
 
 module.exports = product_controller
