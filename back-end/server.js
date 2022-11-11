@@ -18,6 +18,8 @@ app.use('/api', require("./routes/authRouter"));
 app.use('/api', require("./routes/postRouter"));
 app.use('/api', require("./routes/adminRouter"));
 app.use('/api', require("./routes/userRouter"));
+app.use('/api', require("./routes/commentRouter"));
+app.use('/api', require("./routes/productRouter"));
 
 //Connect to MongoDB
 const URL = process.env.MONGODB_URL;
